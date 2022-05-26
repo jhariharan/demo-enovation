@@ -46,7 +46,7 @@ public class EmployeeController {
         .map(x -> {
           Employee updateEmployee = employeeService.updateEmployee(x);
           return new ResponseEntity<>(updateEmployee, HttpStatus.OK);
-        }).orElseThrow(() -> new EmployeeNotFoundException("No record found with this id : ",id));
+        }).orElseThrow(() -> new EmployeeNotFoundException("No record found with this id"));
   }
 
   @PutMapping("/employees/{id}")
@@ -58,13 +58,13 @@ public class EmployeeController {
           x.setEmailAddress(updateEmployee.getEmailAddress());
           Employee newUpdatedEmployee = employeeService.updateEmployee(x);
           return new ResponseEntity<>(newUpdatedEmployee, HttpStatus.OK);
-        }).orElseThrow(() -> new EmployeeNotFoundException("Employee update failed for this id : ",id));
+        }).orElseThrow(() -> new EmployeeNotFoundException("Employee update failed for this id"));
   }
 
   @DeleteMapping("/employees/{id}")
   public ResponseEntity<String> deleteEmployeeById(@PathVariable("id") int id) throws EmployeeNotFoundException {
     employeeService.getEmployeeById(id)
-        .orElseThrow(() -> new EmployeeNotFoundException("Employee not found, hence deleted failed for this id : ",id));
+        .orElseThrow(() -> new EmployeeNotFoundException("Employee not found, hence deleted failed for this id"));
     employeeService.deleteEmployee(id);
 
     return new ResponseEntity<>("Employee deleted successfully", HttpStatus.OK);

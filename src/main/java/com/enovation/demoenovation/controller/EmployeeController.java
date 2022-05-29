@@ -30,25 +30,44 @@ public class EmployeeController {
   @Autowired
   private EmployeeService employeeService;
 
+  /**
+   * GET end point which gets list of all employees
+   * @return List
+   */
+
   @GetMapping("/employees")
   public List<Employee> getAllEmployees() {
     return employeeService.getAllEmployees();
   }
 
+  /**
+   * POST end point to add a new employee
+   * @param employee
+   * @return employee
+   */
   @PostMapping("/employees")
   public Employee addEmployee(@Valid @NotNull @RequestBody Employee employee) {
     return employeeService.addEmployee(employee);
   }
 
+  /**
+   * GET end point to to get employee details for an id
+   * @param id
+   * @return employee
+   */
+
   @GetMapping("/employees/{id}")
   public ResponseEntity<Employee> getEmployeeById(@PathVariable("id") int id) throws EmployeeNotFoundException {
-    return employeeService.getEmployeeById(id)
-        .map(x -> {
-          Employee updateEmployee = employeeService.updateEmployee(x);
-          return new ResponseEntity<>(updateEmployee, HttpStatus.OK);
-        }).orElseThrow(() -> new EmployeeNotFoundException("No record found with this id"));
+    Employee employee = employeeService.getEmployeeById(id)
+        .orElseThrow(() -> new EmployeeNotFoundException("Employee not found for this id :: " + id));
+    return ResponseEntity.ok().body(employee);
   }
 
+  /**
+   * End point to update the details of an employee
+   * @param id
+   * @return employee
+   */
   @PutMapping("/employees/{id}")
   public ResponseEntity<Employee> updateEmployee(@PathVariable int id, @Valid @NotNull @RequestBody Employee updateEmployee) throws EmployeeNotFoundException {
     return employeeService.getEmployeeById(id)
@@ -61,10 +80,15 @@ public class EmployeeController {
         }).orElseThrow(() -> new EmployeeNotFoundException("Employee update failed for this id"));
   }
 
+  /**
+   * End point to delete an employee given an id
+   * @param id
+   * @return employee
+   */
   @DeleteMapping("/employees/{id}")
   public ResponseEntity<String> deleteEmployeeById(@PathVariable("id") int id) throws EmployeeNotFoundException {
     employeeService.getEmployeeById(id)
-        .orElseThrow(() -> new EmployeeNotFoundException("Employee not found, hence deleted failed for this id"));
+        .orElseThrow(() -> new EmployeeNotFoundException("Employee not found, hence deletion failed for this id"));
     employeeService.deleteEmployee(id);
 
     return new ResponseEntity<>("Employee deleted successfully", HttpStatus.OK);
